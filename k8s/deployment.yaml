@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aks-demo
+  namespace: aks-demo
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: aks-demo
+  template:
+    metadata:
+      labels:
+        app: aks-demo
+    spec:
+      containers:
+        - name: aks-demo
+          image: ${ACR_LOGIN_SERVER}/aks-demo:v1
+          ports:
+            - containerPort: 5000
+          env:
+            - name: APP_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: aks-demo-config
+                  key: APP_NAME
+            - name: ENVIRONMENT
+              valueFrom:
+                configMapKeyRef:
+                  name: aks-demo-config
+                  key: ENVIRONMENT
+            - name: SECRET_MESSAGE
+              valueFrom:
+                secretKeyRef:
+                  name: aks-demo-secret
+                  key: SECRET_MESSAGE
+          volumeMounts:
+            - name: application-storage
+              mountPath: /data
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+      volumes:
+        - name: application-storage
+          persistentVolumeClaim:
+            claimName: aks-demo-pvc
