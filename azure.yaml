@@ -1,0 +1,12 @@
+name: aks-azd-ml-demo
+metadata:
+  template: aks-azd-ml-demo
+
+infra:
+  provider: bicep
+  path: infra
+
+hooks:
+  postprovision:
+    shell: pwsh
+    run: ./scripts/deploy-aks.ps1

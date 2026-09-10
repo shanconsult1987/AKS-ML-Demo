@@ -1,0 +1,4 @@
+.azure/
+ml-api/.venv/
+ml-api/model/model.pkl
+__pycache__/
